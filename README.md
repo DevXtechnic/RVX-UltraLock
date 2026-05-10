@@ -1,7 +1,7 @@
 # 🔒 RVX UltraLock - Focus Mode YouTube
 
 <p align="center">
-  <img src="screenshots/ultralock_toggle.png" width="400" alt="Ultra Lock Toggle">
+  <img src="screenshots/lock_duration_dialog.png" width="300" alt="Duration Selection">
 </p>
 
 RVX UltraLock is a customized version of **YouTube ReVanced Extended (RVX)** designed for digital wellbeing. It introduces a powerful **Ultra Lock** mechanism that prevents access to the YouTube settings menu for a set duration, helping you stay focused and avoid the temptation of bypassing your content filters.
@@ -18,14 +18,14 @@ The hallmark feature of this build. Found under **RVX Settings > Miscellaneous**
 
 ### 🖼️ Preview
 <p align="center">
-  <img src="screenshots/lock_duration_dialog.png" width="300" alt="Duration Selection">
+  <img src="screenshots/settings_locked_toast.png" width="400" alt="Remaining Time Notice">
   <img src="screenshots/limited_time_input.png" width="300" alt="Time Input">
 </p>
 
 ### 📢 Notifications
 The app keeps you informed when you attempt to enter the "danger zone":
 <p align="center">
-  <img src="screenshots/settings_locked_toast.png" width="400" alt="Remaining Time Notice">
+  <img src="screenshots/ultralock_toggle.png" width="400" alt="Ultra Lock Toggle">
   <img src="screenshots/locked_permanent_toast.png" width="400" alt="Permanent Lock Notice">
 </p>
 
