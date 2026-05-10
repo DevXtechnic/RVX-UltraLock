@@ -3297,7 +3297,7 @@
   {
     "name": "Theme",
     "description": "Changes the app\u0027s themes to the values specified in patch options.",
-    "use": false,
+    "use": true,
     "dependencies": [
       "ResourcePatch",
       "Settings for YouTube"

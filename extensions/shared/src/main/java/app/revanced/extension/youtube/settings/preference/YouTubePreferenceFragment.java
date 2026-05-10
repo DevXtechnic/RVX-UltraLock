@@ -19,6 +19,7 @@ import android.widget.Toolbar;
 import java.util.Date;
 
 import app.revanced.extension.shared.innertube.client.YouTubeClient;
+import app.revanced.extension.shared.settings.BaseSettings;
 import app.revanced.extension.shared.settings.Setting;
 import app.revanced.extension.shared.settings.preference.LogBufferManager;
 import app.revanced.extension.shared.settings.preference.ToolbarPreferenceFragment;
@@ -30,6 +31,7 @@ import app.revanced.extension.youtube.patches.utils.PatchStatus;
 import app.revanced.extension.youtube.patches.utils.ReturnYouTubeDislikePatch;
 import app.revanced.extension.youtube.returnyoutubedislike.ReturnYouTubeDislike;
 import app.revanced.extension.youtube.settings.Settings;
+import app.revanced.extension.youtube.settings.UltraLockManager;
 import app.revanced.extension.youtube.settings.YouTubeActivityHook;
 import app.revanced.extension.youtube.utils.ExtendedUtils;
 
@@ -88,13 +90,9 @@ public class YouTubePreferenceFragment extends ToolbarPreferenceFragment {
             preferenceScreen = getPreferenceScreen();
             Utils.sortPreferenceGroups(preferenceScreen);
             setPreferenceScreenToolbar(preferenceScreen);
-
-            // Import / Export
             setBackupRestorePreference();
-
-            // Debug log
             setDebugLogPreference();
-
+            setUltraLockPreference();
             setPreferenceAvailability();
         } catch (Exception ex) {
             Logger.printException(() -> "initialize failure", ex);
@@ -434,5 +432,63 @@ public class YouTubePreferenceFragment extends ToolbarPreferenceFragment {
                 preference.setEnabled(enabled);
             }
         }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void setUltraLockPreference() {
+        // Create the Ultra Lock preferences dynamically and put them on the ROOT settings screen
+        // to bypass any XML-stripping or nested PreferenceScreen lifecycle issues entirely.
+        PreferenceScreen rootScreen = getPreferenceScreen();
+        if (rootScreen == null) {
+            return;
+        }
+
+        // Avoid adding duplicates if initialize() is called multiple times
+        if (findPreference("revanced_ultra_lock_enabled") != null) {
+            return;
+        }
+
+        android.preference.PreferenceCategory cat = new android.preference.PreferenceCategory(getActivity());
+        cat.setTitle("Ultra Lock");
+
+        int layoutId = getActivity().getResources().getIdentifier("revanced_settings_preferences_category", "layout", getActivity().getPackageName());
+        if (layoutId != 0) {
+            cat.setLayoutResource(layoutId);
+        }
+
+        // Add to the Miscellaneous screen, or fallback to root if not found
+        android.preference.Preference miscScreen = findPreference("revanced_preference_screen_misc");
+        if (miscScreen instanceof android.preference.PreferenceGroup) {
+            cat.setOrder(0);
+            ((android.preference.PreferenceGroup) miscScreen).addPreference(cat);
+        } else {
+            cat.setOrder(0);
+            rootScreen.addPreference(cat);
+        }
+
+        SwitchPreference toggle = new SwitchPreference(getActivity());
+        toggle.setKey("revanced_ultra_lock_enabled");
+        toggle.setTitle("Ultra Lock");
+        toggle.setSummary("Choose a Lifetime or Limited Time lock.");
+        toggle.setChecked(app.revanced.extension.shared.settings.BaseSettings.ULTRA_LOCK_ENABLED.get());
+        toggle.setOnPreferenceChangeListener((pref, newValue) -> {
+            boolean enabled = (Boolean) newValue;
+            if (enabled) {
+                UltraLockManager.promptLockDuration(getActivity(), () -> {
+                    app.revanced.extension.shared.settings.BaseSettings.ULTRA_LOCK_ENABLED.save(true);
+                    UltraLockManager.setLockEnabled(getActivity(), true);
+                    app.revanced.extension.shared.utils.Utils.showToastShort("Settings locked");
+                    getActivity().finish();
+                }, () -> toggle.setChecked(false));
+                return false; // Toggle checked state manually after dialog finishes
+            } else {
+                app.revanced.extension.shared.settings.BaseSettings.ULTRA_LOCK_ENABLED.save(false);
+                UltraLockManager.setLockEnabled(getActivity(), false);
+                return true;
+            }
+        });
+        cat.addPreference(toggle);
+
+        // Removed "Lock Status & Logs" as part of the permanent block migration.
     }
 }

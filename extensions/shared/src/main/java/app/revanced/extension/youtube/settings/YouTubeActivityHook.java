@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toolbar;
 
 import app.revanced.extension.shared.settings.BaseActivityHook;
+import app.revanced.extension.shared.settings.BaseSettings;
 import app.revanced.extension.shared.utils.Utils;
 import app.revanced.extension.youtube.settings.preference.YouTubePreferenceFragment;
 import app.revanced.extension.youtube.settings.search.YouTubeSearchViewController;
@@ -32,9 +33,18 @@ public class YouTubeActivityHook extends BaseActivityHook {
 
     /**
      * Injection point.
+     *
+     * <p>When Ultra Lock is enabled and unexpired, the entire settings activity 
+     * is blocked before any UI renders. This prevents access to ALL settings tabs
+     * (RVX, General, Playback, Data saving, etc.).
      */
-    @SuppressWarnings("unused")
     public static void initialize(Activity parentActivity) {
+        if (UltraLockManager.isLocked(parentActivity)) {
+            String msg = UltraLockManager.getLockStatusMessage(parentActivity);
+            Utils.showToastShort(msg);
+            parentActivity.finish();
+            return;
+        }
         BaseActivityHook.initialize(new YouTubeActivityHook(), parentActivity);
     }
 

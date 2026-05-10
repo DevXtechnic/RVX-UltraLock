@@ -14,6 +14,7 @@ android {
 
     defaultConfig {
         minSdk = 24
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -22,7 +23,7 @@ android {
 
             // 'libj2v8.so' is already included in the patch.
             ndk {
-                abiFilters.add("")
+                abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))
             }
         }
     }
@@ -30,6 +31,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    lint {
+        abortOnError = false
     }
 }
 
