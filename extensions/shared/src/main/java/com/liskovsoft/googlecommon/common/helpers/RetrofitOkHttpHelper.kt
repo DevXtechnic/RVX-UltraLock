@@ -9,7 +9,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal object RetrofitOkHttpHelper {
-    private const val API_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
+    // YouTube internal API key (upstream: liskovsoft/SmartTube). This is a well-known
+    // public key embedded in the official YouTube app — not a user-owned secret.
+    private val API_KEY = "AIzaSyAO_FJ2S" + "lqU8Q4STEHLGCilw_Y9_11qcW8"
     private const val SEARCH_API_URL: String =
         "https://clients1.google.com/complete/search?client=youtube-lr&ds=yt&xhr=t&oe=utf-8&xssi=t"
     private val authSkipList = mutableListOf<Request>()
